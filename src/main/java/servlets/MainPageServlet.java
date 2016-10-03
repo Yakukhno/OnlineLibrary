@@ -13,10 +13,7 @@ public class MainPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
-
-        out.println("Online Library");
+        req.getRequestDispatcher("/WEB-INF/views/main.jsp").forward(req, resp);
     }
 
 }

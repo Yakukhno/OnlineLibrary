@@ -6,5 +6,6 @@
 </head>
 <body>
     <h2 align="center">Welcome to Online Library</h2>
+    <p> ${author} ${name}</p>
 </body>
 </html>

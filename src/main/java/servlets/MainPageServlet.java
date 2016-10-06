@@ -1,6 +1,6 @@
 package servlets;
 
-import dao.BookDAO;
+import dao.impl.BookDAOJdbcImpl;
 import entities.Book;
 
 import javax.servlet.ServletException;
@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 @WebServlet("/")
@@ -18,11 +17,12 @@ public class MainPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        BookDAO bookDAO = new BookDAO();
-        ArrayList<Book> books = bookDAO.getBooksByDate(2014);
+        BookDAOJdbcImpl bookDAOJdbcImpl = new BookDAOJdbcImpl();
+        ArrayList<Book> books = bookDAOJdbcImpl.getBooksByAuthor("Шкляр");
 
-        req.setAttribute("name", books.get(0).getName());
-        req.setAttribute("author", books.get(0).getAuthor());
+//        bookDAOJdbcImpl.addBook("Мастер та Маргарита", "Михайло Булгаков", 1919);
+
+        req.setAttribute("books", books);
 
         req.getRequestDispatcher("/WEB-INF/views/main.jsp").forward(req, resp);
     }

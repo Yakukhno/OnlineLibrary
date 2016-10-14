@@ -5,6 +5,7 @@ import entities.Book;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BookDAOJdbcImpl implements BookDAO {
 
@@ -29,14 +30,8 @@ public class BookDAOJdbcImpl implements BookDAO {
 
         String query = "INSERT INTO book (name, author, date) VALUES (?, ?, ?)";
 
-        Connection connection = null;
-        try {
-            connection = getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (PreparedStatement statement = connection.prepareStatement(query)){
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)){
 
             statement.setString(1, name);
             statement.setString(2, author);
@@ -54,25 +49,12 @@ public class BookDAOJdbcImpl implements BookDAO {
 
         ArrayList<Book> books = new ArrayList<>();
 
-        Connection connection = null;
-        try {
-            connection = getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (Statement statement = connection.createStatement()){
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement()){
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM book");
 
-            while (resultSet.next()) {
-                Book book = new Book();
-                book.setId(resultSet.getInt("id"));
-                book.setName(resultSet.getString("name"));
-                book.setAuthor(resultSet.getString("author"));
-                book.setDate(resultSet.getInt("date"));
-                books.add(book);
-            }
+            books = getBooksFromResultSet(resultSet);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,26 +68,13 @@ public class BookDAOJdbcImpl implements BookDAO {
 
         ArrayList<Book> books = new ArrayList<>();
 
-        Connection connection = null;
-        try {
-            connection = getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (Statement statement = connection.createStatement()){
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement()){
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM book WHERE" +
                     " name LIKE '%" + name + "%'");
 
-            while (resultSet.next()) {
-                Book book = new Book();
-                book.setId(resultSet.getInt("id"));
-                book.setName(resultSet.getString("name"));
-                book.setAuthor(resultSet.getString("author"));
-                book.setDate(resultSet.getInt("date"));
-                books.add(book);
-            }
+            books = getBooksFromResultSet(resultSet);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,26 +87,13 @@ public class BookDAOJdbcImpl implements BookDAO {
 
         ArrayList<Book> books = new ArrayList<>();
 
-        Connection connection = null;
-        try {
-            connection = getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try (Statement statement = connection.createStatement()){
+        try (Connection connection = getConnection();
+             Statement statement = connection.createStatement()){
 
             ResultSet resultSet = statement.executeQuery("SELECT * FROM book WHERE" +
                     " author LIKE '%" + author + "%'");
 
-            while (resultSet.next()) {
-                Book book = new Book();
-                book.setId(resultSet.getInt("id"));
-                book.setName(resultSet.getString("name"));
-                book.setAuthor(resultSet.getString("author"));
-                book.setDate(resultSet.getInt("date"));
-                books.add(book);
-            }
+            books = getBooksFromResultSet(resultSet);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,26 +109,13 @@ public class BookDAOJdbcImpl implements BookDAO {
 
         ArrayList<Book> books = new ArrayList<>();
 
-        Connection connection = null;
-        try {
-            connection = getConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)){
 
-        try (PreparedStatement statement = connection.prepareStatement(query)){
-
-            statement.setInt((int) 1, date);
+            statement.setInt(1, date);
             ResultSet resultSet = statement.executeQuery();
 
-            while (resultSet.next()) {
-                Book book = new Book();
-                book.setId(resultSet.getInt("id"));
-                book.setName(resultSet.getString("name"));
-                book.setAuthor(resultSet.getString("author"));
-                book.setDate(resultSet.getInt("date"));
-                books.add(book);
-            }
+            books = getBooksFromResultSet(resultSet);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -191,6 +134,28 @@ public class BookDAOJdbcImpl implements BookDAO {
 
     }
 
+    private ArrayList<Book> getBooksFromResultSet(ResultSet resultSet) {
+
+        ArrayList<Book> books = new ArrayList<>();
+
+        try {
+            while (resultSet.next()) {
+                Book book = new Book();
+                book.setId(resultSet.getInt("id"));
+                book.setName(resultSet.getString("name"));
+                book.setAuthor(resultSet.getString("author"));
+                book.setDate(resultSet.getInt("date"));
+                books.add(book);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (books.size() == 0) {
+            return null;
+        } else {
+            return books;
+        }
+    }
 
 
 }
